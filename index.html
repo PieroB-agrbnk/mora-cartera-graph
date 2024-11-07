@@ -6,52 +6,79 @@
     <title>Mora Cartera Graph</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.3/Recharts.min.js"></script>
     <style>
-        body { 
-            margin: 0; 
+        * {
+            margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
+            box-sizing: border-box;
         }
-        .container { 
-            width: 100vw; 
-            height: 100vh;
-            padding: 0;
-        }
-        .title { 
-            font-size: 24px; 
-            font-weight: bold; 
-            text-align: center; 
-            margin: 10px 0;
-        }
-        .chart-container { 
-            height: calc(100vh - 50px);
+
+        html, body {
             width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: white;
         }
+
+        #root {
+            width: 100%;
+            height: 100%;
+        }
+
+        .main-container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .chart-container {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+        }
+
         .tooltip {
             background: white;
-            padding: 8px;
+            padding: 8px 12px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .tooltip-label { 
-            font-weight: bold; 
-            margin-bottom: 4px;
+
+        .tooltip p {
+            margin: 4px 0;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
         }
 
+        .tooltip-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Eliminar cualquier barra o footer */
         .visor-web-footer,
         [class*="footer"],
         #footer,
         .browser-footer,
         iframe[src*="terms"],
         iframe[src*="privacy"] {
-        display: none !important;
-    
-    }
-</style>
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -202,7 +229,7 @@
                     };
 
                     return React.createElement('div', {
-                        className: 'container'
+                        className: 'main-container'
                     }, [
                         React.createElement('h2', {
                             className: 'title'
@@ -216,7 +243,7 @@
                             }, [
                                 React.createElement(LineChart, {
                                     data: data,
-                                    margin: { top: 50, right: 180, left: 50, bottom: 100 }
+                                    margin: { top: 20, right: 180, left: 40, bottom: 60 }
                                 }, [
                                     React.createElement(CartesianGrid, {
                                         strokeDasharray: '3 3',
@@ -230,23 +257,23 @@
                                         tick: { fill: '#333333', fontSize: 11 },
                                         tickMargin: 20,
                                         interval: 0,
-                                        height: 80
+                                        height: 60
                                     }),
                                     React.createElement(YAxis, {
                                         domain: [0, 16],
                                         ticks: [0, 2, 4, 6, 8, 10, 12, 14, 16],
                                         tickFormatter: (value) => `${value}%`,
                                         tick: { fill: '#333333', fontSize: 12 },
-                                        width: 60
+                                        width: 45
                                     }),
                                     React.createElement(Tooltip, {
                                         content: CustomTooltip
                                     }),
                                     React.createElement(Legend, {
                                         verticalAlign: 'bottom',
-                                        height: 100,
+                                        height: 36,
                                         wrapperStyle: {
-                                            paddingTop: '30px',
+                                            paddingTop: '10px',
                                             borderTop: '1px solid #E5E7EB',
                                             fontSize: '12px'
                                         }

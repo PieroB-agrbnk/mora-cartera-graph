@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mora Cartera Graph</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.3/Recharts.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .container { width: 100%; max-width: 1800px; margin: 0 auto; padding: 2rem; }
+        .title { font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; }
+        .chart-container { height: 85vh; }
+        .tooltip {
+            background: white;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tooltip-label { font-weight: bold; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = window.Recharts;
+
+                const MoraCarteraGraph = () => {
+                    const colors = {
+                        'Mibanco': '#7030A0',
+                        'CMAC Arequipa': '#4472C4',
+                        'CMAC Cusco': '#5B9BD5',
+                        'CRAC Los Andes': '#002060',
+                        'Financiera Confianza': '#70AD47',
+                        'Financiera Efectiva': '#548235',
+                        'EC Alternativa': '#BF9000',
+                        'Agrobanco': '#006450'
+                    };
+
+                    const dates = ['Nov-21', 'Dic-21', 'Ene-22', 'Feb-22', 'Mar-22', 'Abr-22', 'May-22', 'Jun-22', 'Jul-22', 'Ago-22', 'Set-22', 'Oct-22', 'Nov-22', 'Dic-22', 'Ene-23', 'Feb-23', 'Mar-23', 'Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Set-23', 'Oct-23', 'Nov-23', 'Dic-23', 'Ene-24', 'Feb-24', 'Mar-24', 'Abr-24', 'May-24', 'Jun-24', 'Jul-24', 'Ago-24'];
+
+                    const values = {
+                        'Mibanco': [6.8, 6.8, 6.9, 6.7, 6.9, 6.7, 6.9, 6.9, 6.8, 6.5, 6.6, 6.7, 5.9, 5.6, 5.0, 4.5, 5.0, 5.5, 6.1, 6.3, 6.4, 6.5, 6.3, 6.4, 6.4, 6.4, 6.3, 6.4, 6.7, 6.7, 7.3, 7.4, 7.5, 7.3],
+                        'CMAC Arequipa': [3.2, 3.1, 3.6, 3.7, 3.7, 3.7, 3.8, 3.8, 3.9, 3.9, 3.9, 4.1, 4.3, 4.3, 4.4, 4.3, 4.2, 4.2, 4.2, 4.2, 4.2, 4.1, 4.2, 4.3, 4.5, 4.6, 4.8, 4.9, 5.1, 5.2, 5.4, 5.5, 5.6, 5.8],
+                        'CMAC Cusco': [3.5, 3.2, 3.3, 3.2, 3.4, 3.4, 3.7, 3.7, 4.2, 4.3, 4.4, 4.8, 4.6, 4.6, 5.3, 5.3, 4.8, 4.5, 4.6, 4.2, 4.6, 4.5, 4.6, 4.8, 4.7, 4.1, 4.5, 4.7, 5.1, 5.1, 5.4, 5.2, 5.5, 5.3],
+                        'CRAC Los Andes': [15.4, 12.7, 12.9, 12.9, 12.7, 13.1, 13.6, 12.2, 12.4, 8.9, 9.0, 9.5, 9.6, 8.7, 9.2, 9.2, 9.2, 10.1, 8.0, 6.7, 6.3, 6.3, 6.7, 7.1, 6.0, 7.0, 8.1, 8.6, 9.3, 10.8, 10.9, 12.1, 11.7, 12.4],
+                        'Financiera Confianza': [6.3, 6.1, 6.0, 5.7, 5.6, 5.8, 5.9, 6.0, 6.3, 5.9, 5.7, 5.7, 5.4, 5.5, 5.8, 6.2, 6.3, 6.8, 7.1, 7.4, 7.3, 6.8, 6.6, 6.6, 6.6, 6.8, 7.4, 8.1, 8.2, 9.0, 8.6, 8.1, 7.7, 7.2],
+                        'Financiera Efectiva': [4.0, 4.3, 4.6, 4.8, 4.9, 5.1, 5.6, 5.2, 5.8, 5.9, 4.9, 5.4, 5.7, 6.2, 6.2, 6.5, 6.5, 6.7, 6.8, 6.4, 7.1, 7.1, 7.1, 7.5, 5.6, 5.3, 6.8, 8.0, 8.2, 9.2, 8.8, 8.3, 8.6, 9.1],
+                        'EC Alternativa': [4.2, 3.9, 4.2, 4.4, 3.9, 4.2, 4.4, 4.1, 4.4, 4.6, 4.3, 4.6, 4.9, 4.5, 4.8, 4.9, 4.6, 4.9, 5.1, 4.6, 5.0, 5.2, 4.8, 5.0, 5.3, 5.3, 6.7, 7.1, 7.5, 8.0, 9.6, 10.7, 10.7, 10.7],
+                        'Agrobanco': [5.2, 1.6, 1.8, 1.8, 1.6, 1.8, 1.9, 1.7, 2.0, 2.2, 2.7, 3.0, 3.0, 3.0, 3.5, 3.2, 3.7, 4.2, 4.3, 4.2, 4.9, 5.5, 4.5, 5.2, 5.6, 4.4, 4.8, 5.3, 5.8, 5.2, 5.3, 5.2, 5.2, 5.2]
+                    };
+
+                    const data = dates.map((date, index) => ({
+                        date,
+                        ...Object.keys(values).reduce((acc, key) => ({
+                            ...acc,
+                            [key]: values[key][index]
+                        }), {})
+                    }));
+
+                    const specialDates = ['Dic-21', 'Dic-22', 'Dic-23', 'Ago-24'];
+
+                    const CustomTooltip = ({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                            return React.createElement('div', {
+                                className: 'tooltip'
+                            }, [
+                                React.createElement('p', {
+                                    key: 'label',
+                                    className: 'tooltip-label'
+                                }, label),
+                                ...payload.map((entry, index) =>
+                                    React.createElement('p', {
+                                        key: index,
+                                        style: { color: entry.color }
+                                    }, `${entry.name}: ${entry.value.toFixed(1)}%`)
+                                )
+                            ]);
+                        }
+                        return null;
+                    };
+
+                    const getLabelPosition = (dataKey, value, date) => {
+                        if (date === 'Dic-21') {
+                            const positions = {
+                                'CRAC Los Andes': { dy: -10, dx: 15 },
+                                'Financiera Confianza': { dy: -1, dx: 15 },
+                                'Mibanco': { dy: -5, dx: 15 },
+                                'CMAC Arequipa': { dy: 4, dx: 15 },
+                                'CMAC Cusco': { dy: 20, dx: 15 },
+                                'Financiera Efectiva': { dy: -3, dx: 15 },
+                                'EC Alternativa': { dy: 15, dx: 15 },
+                                'Agrobanco': { dy: -15, dx: 15 }
+                            };
+                            return positions[dataKey];
+                        } else if (date === 'Dic-22') {
+                            const positions = {
+                                'CRAC Los Andes': { dy: -15, dx: 15 },
+                                'Financiera Confianza': { dy: 15, dx: -15 },
+                                'Mibanco': { dy: -20, dx: 15 },
+                                'CMAC Arequipa': { dy: 20, dx: 15 },
+                                'CMAC Cusco': { dy: 2, dx: -15 },
+                                'Financiera Efectiva': { dy: -5, dx: 15 },
+                                'EC Alternativa': { dy: 5, dx: -15 },
+                                'Agrobanco': { dy: 25, dx: 15 }
+                            };
+                            return positions[dataKey];
+                        } else if (date === 'Dic-23') {
+                            const positions = {
+                                'CRAC Los Andes': { dy: 5, dx: 15 },
+                                'Financiera Confianza': { dy: -5, dx: -15 },
+                                'Mibanco': { dy: 0, dx: 15 },
+                                'CMAC Arequipa': { dy: 15, dx: 15 },
+                                'CMAC Cusco': { dy: 20, dx: -15 },
+                                'Financiera Efectiva': { dy: -25, dx: 15 },
+                                'EC Alternativa': { dy: 20, dx: 0 },
+                                'Agrobanco': { dy: -20, dx: 15 }
+                            };
+                            return positions[dataKey];
+                        } else if (date === 'Ago-24') {
+                            const positions = {
+                                'CRAC Los Andes': { dy: -25, dx: 15 },
+                                'Financiera Confianza': { dy: -10, dx: -15 },
+                                'Mibanco': { dy: -10, dx: 15 },
+                                'CMAC Arequipa': { dy: -10, dx: 15 },
+                                'CMAC Cusco': { dy: 20, dx: 0 },
+                                'Financiera Efectiva': { dy: 10, dx: -15 },
+                                'EC Alternativa': { dy: 25, dx: 15 },
+                                'Agrobanco': { dy: -15, dx: 15 }
+                            };
+                            return positions[dataKey];
+                        }
+                        return { dy: 0, dx: 0 };
+                    };
+
+                    const CustomizedDot = (props) => {
+                        const { cx, cy, payload, dataKey } = props;
+                        if (specialDates.includes(payload.date)) {
+                            const { dx, dy } = getLabelPosition(dataKey, payload[dataKey], payload.date);
+                            return React.createElement('g', null, [
+                                React.createElement('circle', {
+                                    key: 'circle',
+                                    cx,
+                                    cy,
+                                    r: 3,
+                                    fill: colors[dataKey]
+                                }),
+                                React.createElement('path', {
+                                    key: 'path',
+                                    d: `M${cx},${cy} L${cx + dx*0.6},${cy + dy*0.6}`,
+                                    stroke: colors[dataKey],
+                                    strokeWidth: "1",
+                                    opacity: "0.5"
+                                }),
+                                React.createElement('text', {
+                                    key: 'text',
+                                    x: cx + dx,
+                                    y: cy + dy,
+                                    textAnchor: dx > 0 ? "start" : dx < 0 ? "end" : "middle",
+                                    fill: colors[dataKey],
+                                    style: { fontWeight: 'bold', fontSize: '12px' },
+                                    dy: "-5"
+                                }, `${payload[dataKey].toFixed(1)}%`)
+                            ]);
+                        }
+                        return null;
+                    };
+
+                    return React.createElement('div', {
+                        className: 'container'
+                    }, [
+                        React.createElement('h2', {
+                            className: 'title'
+                        }, 'Mora Cartera Nueva Atrasada (%)'),
+                        React.createElement('div', {
+                            className: 'chart-container'
+                        }, [
+                            React.createElement(ResponsiveContainer, {
+                                width: '100%',
+                                height: '100%'
+                            }, [
+                                React.createElement(LineChart, {
+                                    data: data,
+                                    margin: { top: 50, right: 180, left: 50, bottom: 100 }
+                                }, [
+                                    React.createElement(CartesianGrid, {
+                                        strokeDasharray: '3 3',
+                                        stroke: '#E5E7EB',
+                                        opacity: 0.3
+                                    }),
+                                    React.createElement(XAxis, {
+                                        dataKey: 'date',
+                                        angle: -45,
+                                        textAnchor: 'end',
+                                        tick: { fill: '#333333', fontSize: 11 },
+                                        tickMargin: 20,
+                                        interval: 0,
+                                        height: 80
+                                    }),
+                                    React.createElement(YAxis, {
+                                        domain: [0, 16],
+                                        ticks: [0, 2, 4, 6, 8, 10, 12, 14, 16],
+                                        tickFormatter: (value) => `${value}%`,
+                                        tick: { fill: '#333333', fontSize: 12 },
+                                        width: 60
+                                    }),
+                                    React.createElement(Tooltip, {
+                                        content: CustomTooltip
+                                    }),
+                                    React.createElement(Legend, {
+                                        verticalAlign: 'bottom',
+                                        height: 100,
+                                        wrapperStyle: {
+                                            paddingTop: '30px',
+                                            borderTop: '1px solid #E5E7EB',
+                                            fontSize: '12px'
+                                        }
+                                    }),
+                                    ...Object.entries(colors).map(([key, color]) =>
+                                        React.createElement(Line, {
+                                            key,
+                                            type: 'monotone',
+                                            dataKey: key,
+                                            stroke: color,
+                                            strokeWidth: 1.5,
+                                            dot: CustomizedDot,
+                                            activeDot: { r: 4 },
+                                            strokeOpacity: 0.9
+                                        })
+                                    )
+                                ])
+                            ])
+                        ])
+                    ]);
+                };
+
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                root.render(React.createElement(MoraCarteraGraph));
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+Add graph visualization
